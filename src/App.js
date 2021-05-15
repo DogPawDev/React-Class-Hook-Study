@@ -1,14 +1,25 @@
-
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 
 
 function App() {
+ var [funcShow,setFuncShow] = useState(true);
+ var [classShow,setclassShow] = useState(true);
+
+
   return (
     <div className="container">
       <h1>Heeloo world</h1>
-      <FuncComp initNumber={2}></FuncComp>
-      <ClassComp initNumber={2}></ClassComp>
+      <input type = "button" value="remove func" onClick={()=>{
+        setFuncShow(false);
+      }}></input>
+      <input type = "button" value="remove class" onClick={()=>{
+        setclassShow(false);
+      }}></input>
+      
+
+      {funcShow ? <FuncComp initNumber={2}></FuncComp> : null}
+      {classStyle ? <ClassComp initNumber={2}></ClassComp> : null}
     </div>
   );
 }
@@ -17,6 +28,8 @@ function App() {
 // 함수형 방식 hook
 var funcStyle = 'color:green';
 var funcId = 0;
+
+
 function FuncComp(props){
   
   var numberState = useState(props.initNumber);
@@ -30,6 +43,45 @@ function FuncComp(props){
   // 위와 동일한 코드
     var [_date,setDate] = useState((new Date().toString()));
 
+  useEffect(()=>{
+    console.log("%cfunc => useEffect (componentDidMount & componentDidUpdate 와 동일)" +(++funcId),funcStyle);
+    //컴포넌트가 등장할때 작업하는 곳
+    document.title= number + ': '+ _date;
+
+    return ()=>{
+      console.log("%cfunc => useEffect return CleanUp과 동일" +(++funcId),funcStyle);
+      //다시 useEffect가 실행되기 전에 실행됨 
+    }
+
+  },[number]);
+  //두번 째 인자값 존재 할 경우 해당 값이 바뀔 때만 호출 할 수 있다.
+  // useEffect는 인자로 전달된 함수가 렌더가 끝나고 호출되도록 정해저있다.
+
+  
+  useEffect(()=>{
+    console.log("%cfunc => useEffect _date (componentDidMount & componentDidUpdate 와 동일)" +(++funcId),funcStyle);
+    //컴포넌트가 등장할때 작업하는 곳
+    document.title= number + ': '+ _date;
+
+    return ()=>{
+      console.log("%cfunc => useEffect _date return CleanUp과 동일" +(++funcId),funcStyle);
+      //다시 useEffect가 실행되기 전에 실행됨 
+    }
+
+  },[_date]);
+
+
+
+  useEffect(()=>{
+    console.log("%cfunc => useEffect  (componentDidMount 와 동일)" +(++funcId),funcStyle);
+    //컴포넌트가 등장할때 작업하는 곳
+    document.title= number + ': '+ _date;
+
+    return ()=>{
+      console.log("%cfunc => useEffect  return (componentWillUnMount)과 동일" +(++funcId),funcStyle);
+      // 부모 컴포넌트를 이용해 자식 컴포넌트를 없앨 때 이부분이 실행됨
+    }
+  },[]);
 
 
 
@@ -88,6 +140,7 @@ class ClassComp extends React.Component{
   }
   componentDidUpdate(nextProps,nextState){
     console.log('%cclass ->componentDidUpdate ',classStyle)
+    //state 값이 바뀔 때 호출
   }
 
 
